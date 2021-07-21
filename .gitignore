@@ -1,0 +1,11 @@
+*.cpp.o
+*.compdb_entry
+
+.vscode
+.cache
+
+compile_commands.json
+
+bin
+hls_files/max_template
+hls_files/*.log
