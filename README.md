@@ -1,20 +1,23 @@
 # hls_max_template
 
-A max function in C++14 using recursive templates for High-Level Synthesis.
+An efficient C++14 description of a max process which finds the maximum of a real array. 
+
+Used in High Level Synthesis, produce the most efficient maximum possible by doing reduction at compile time.
+
+Currently, it produces log2(*N*) (+1 if *N* is odd) stages of *integer_part(N/2)* comparisons, can be easily unrolled or pipelined.
 
 ## Content
-
 This repository provides a [header](sources/modules/max.hpp) which defines two recursive template classes with a `process` public method that find the maximum of an array of any size and any type.
 `max_template` can be used for all possible sizes while `max_pow2` works only with sizes that are power of 2. `max_struct` is used to implement `max_template` and may not be used directly.
 
 ## Usage
 
-something like:
+After including the header ( with `#include "max.hpp"` ), just call the process method like that:
 
     const T max_array = max_template<SIZE>::process(array);
   
-where `T` is a correct type (e.g. `int`, `float`, `ap_uint`, ...), `SIZE` is an unsigned integer known at compile time (e.g. a literal, a constexpr or a preprocessor constant) and `array` is an C-style array of `T` of length `SIZE`.
-`max_pow2` is used the same way but won't work (even if it compiles) if `SIZE` is not a power of 2. 
+where `T` is a correct type (e.g. `int`, `float`, `ap_uint`, ...), `SIZE` is an unsigned integer known at compile time (e.g. a literal, a constexpr or a preprocessor constant) and `array` is a C-style array containing `SIZE` elements `T`.
+`max_pow2` is used the same. However, note that it cannot work (even if it compiles) if `SIZE` is not a power of 2. 
 
 It must be compiled with `--std=c++14` (or `gnu++14` or another equivalent).
 
@@ -37,3 +40,8 @@ Just do in a shell:
 By default, no IP are created. You may need to adjust the part and the clock targeted. 
 
 It as been successfully tested on Vitis HLS version 2020.2 and may or may not work with other versions.
+
+## Perpectives
+
+A template argument to produce either the current description or a more resources friendly (Higher latency and/or lower througput) may be added in the future.
+Another template argument specifying the most comparisons per stages is also considered.
