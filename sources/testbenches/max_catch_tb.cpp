@@ -27,9 +27,12 @@
 #include <random>
 #include <vector>
 
-using namespace std;
+#include <catch2/catch.hpp>
 
-int main(int, char **) {
+using std::max_element;
+using std::vector;
+
+TEST_CASE("Factorials are computed", "[factorial]") {
     srand(time(nullptr));
 
     vector<uint8_t> to_be_maxed64(64 * 8, 0);
@@ -37,46 +40,16 @@ int main(int, char **) {
         it = uint8_t(floor(float(rand()) / float(RAND_MAX) * 256.f));
     }
 
-    // vector<uint8_t> to_be_maxed63(63, 0);
-    // for (auto && it : to_be_maxed63) {
-    //     it = uint8_t(floor(float(rand()) / float(RAND_MAX) * 256.f));
-    // }
-
-    // vector<float> to_be_maxed64f(64, 0);
-    // for (auto && it : to_be_maxed64f) {
-    //     it = float(rand()) / float(RAND_MAX) * 1000.f;
-    // }
-
-    // vector<float> to_be_maxed63f(63, 0);
-    // for (auto && it : to_be_maxed63f) {
-    //     it = float(rand()) / float(RAND_MAX) * 1000.f;
-    // }
-
-    int retval = 0;
     for (unsigned u = 0; u < to_be_maxed64.size() - 64; u++) {
         const uint8_t * local_beg = to_be_maxed64.data() + u;
         const uint8_t * local_end = local_beg + 64;
 
         const uint8_t max64_value = do_max_64(local_beg);
-        // const uint8_t max63_value  = do_max_63(to_be_maxed63.data());
-        // const float   max64f_value = do_max_64f(to_be_maxed64f.data());
-        // const float   max63f_value = do_max_63f(to_be_maxed63f.data());
-
-        // cout << unsigned(max64_value) << " " << unsigned(max63_value) << endl;
-        // cout << float(max64f_value) << " " << float(max63f_value) << endl;
-
+ 
         const uint8_t max_64_test = *max_element(local_beg, local_end);
-        // const uint8_t max_63_test  = *max_element(to_be_maxed63.begin(), to_be_maxed63.end());
-        // const float   max_64f_test = *max_element(to_be_maxed64f.begin(), to_be_maxed64f.end());
-        // const float   max_63f_test = *max_element(to_be_maxed63f.begin(), to_be_maxed63f.end());
 
-        retval += (max_64_test == max64_value ? 0 : 1);
-        // retval += (max_63_test == max63_value ? 0 : 1);
-        // retval += (max_64f_test == max64f_value ? 0 : 1);
-        // retval += (max_63f_test == max63f_value ? 0 : 1);
+        REQUIRE(max_64_test == max64_value);
     }
 
-    cout << (retval == 0 ? "Test passed. " : "Test failed. ") << endl;
-
-    return retval;
+    // cout << (retval == 0 ? "Test passed. " : "Test failed. ") << endl;
 }

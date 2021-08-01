@@ -32,20 +32,31 @@ VITIS_HOME=${XILINX_HOME}/Vitis_HLS/${XILINX_VER}
 CXXFLAGS:=${CXXFLAGS} -isystem ${VITIS_HOME}/include
 
 SRCDIR=sources
-
+OBJDIR=obj
 BINDIR=bin
-SOURCES:=$(SRCDIR)/modules/max.cpp $(SRCDIR)/testbenches/max_tb.cpp
+
+CATCHOBJ=$(OBJDIR)/catch.cpp.o
+
+SOURCES:=$(SRCDIR)/modules/max.cpp
+SOURCES+=$(SRCDIR)/testbenches/max_catch_tb.cpp
+
 OBJ=$(SOURCES:.cpp=.cpp.o)
 
 TBBIN=$(BINDIR)/tb.out
 
-all: $(BINDIR) $(TBBIN)
+all: $(BINDIR) $(OBJDIR) $(TBBIN)
 
 $(BINDIR):
 	mkdir -p $(BINDIR)
 
-$(TBBIN): $(OBJ)
-	$(CXX) -o $(TBBIN) $(OBJ) $(LDFLAGS)
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+
+$(TBBIN): $(OBJ) $(CATCHOBJ)
+	$(CXX) -o $(TBBIN) $(OBJ) $(CATCHOBJ) $(LDFLAGS)
+
+$(CATCHOBJ) :
+	$(CXX) -o $@ -c $(SRCDIR)/testbenches/catch.cpp $(CXXFLAGS)
 
 %.cpp.o : %.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
@@ -57,6 +68,10 @@ clean:
 .PHONY: clean clear
 clear: clean
 	rm -vf $(TBBIN) $(BINDIR)/results.dat $(COMPDB_ENTRIES) compile_commands.json
+
+.PHONY: clean clear
+fullclear: clear
+	rm -vf $(CATCHOBJ)
 
 testbench: $(TBBIN)
 	cd $(BINDIR); ../$(TBBIN)
