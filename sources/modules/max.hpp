@@ -28,14 +28,18 @@
 
 #ifdef _MAX_IS_TOP_
 
-// uint8_t do_max_63(const uint8_t in_array[63]);
-uint8_t do_max_64(const uint8_t in_array[64]);
-// float   do_max_63f(const float in_array[63]);
-// float   do_max_64f(const float in_array[64]);
+uint16_t do_max_redx_64(const uint16_t in_array[64]);
+uint16_t do_max_tail_64(const uint16_t in_array[64]);
+uint16_t do_max_head_64(const uint16_t in_array[64]);
+uint16_t do_max_loop_64(const uint16_t in_array[64]);
+uint16_t do_max_redx_127(const uint16_t in_array[64]);
+uint16_t do_max_tail_127(const uint16_t in_array[64]);
+uint16_t do_max_head_127(const uint16_t in_array[64]);
+uint16_t do_max_loop_127(const uint16_t in_array[64]);
 
 #endif
 
-template <uint8_t N>
+template <unsigned N>
 struct max_pow2 {
     template <typename T>
     static T process(const T values[N]) {
@@ -101,7 +105,6 @@ public:
     static T process(const T values[N]);
 };
 
-
 /* REDUCED when N is odd */
 
 template <unsigned N>
@@ -154,9 +157,8 @@ template <typename T>
 T max_reduced<N, true>::process(const T values[N]) {
     static_assert(N > 2, "N cannot be less than 3!");
     T half_values[half];
-#pragma HLS array_partition variable = half_values complete
+    loop_redx_max:
     for (uint8_t i = 0; i < half; i++) {
-#pragma HLS unroll
         const uint8_t j   = i << 1;
         const uint8_t jp1 = j + 1;
         half_values[i]    = (values[j] < values[jp1] ? values[jp1] : values[j]);
@@ -169,7 +171,7 @@ template <typename T>
 T max_reduced<N, false>::process(const T values[N]) {
     static_assert(N > 3, "N cannot be less than 3!");
     T half_values[halfp1];
-#pragma HLS array_partition variable = half_values complete
+#pragma HLS array_partition variable=half_values complete
     for (uint8_t i = 0; i < half; i++) {
 #pragma HLS unroll
         const uint8_t j   = i << 1;
@@ -180,12 +182,11 @@ T max_reduced<N, false>::process(const T values[N]) {
     return max_reduced<halfp1, IS_EVEN(halfp1)>::process(half_values);
 }
 
-
 /**
  * @brief User friendly max template
  * 
  * @tparam N    Input Size
- * @tparam Ver  Schedule wanted. Default: REDUCED. 
+ * @tparam Ver  Schedule wanted. Default: REDUCED 
  */
 template <unsigned N, max_type_t Ver = REDUCED>
 class max_template : public max_reduced<N, IS_EVEN(N)> {

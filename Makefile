@@ -23,7 +23,7 @@
 
 CXX=g++
 CXXFLAGS:=-std=c++14 -Wno-unused-label -Wno-unknown-pragmas -Wall -D_MAX_IS_TOP_
-LDFLAGS:=
+LDFLAGS:=-lmatio
 
 XILINX_HOME=/opt/Xilinx
 XILINX_VER=2020.2
@@ -58,9 +58,6 @@ $(TBBIN): $(OBJ) $(CATCHOBJ)
 $(CATCHOBJ) :
 	$(CXX) -o $@ -c $(SRCDIR)/testbenches/catch.cpp $(CXXFLAGS)
 
-%.cpp.o : %.cpp
-	$(CXX) -o $@ -c $< $(CXXFLAGS)
-
 .PHONY: clean clear
 clean:
 	rm -vf $(OBJ)
@@ -74,7 +71,17 @@ fullclear: clear
 	rm -vf $(CATCHOBJ)
 
 testbench: $(TBBIN)
-	cd $(BINDIR); ../$(TBBIN)
+	cd $(BINDIR); ./tb.out
+
+legacy-testbench: $(BINDIR)/tb_legacy.out
+	cd $(BINDIR); ./tb_legacy.out
+
+$(BINDIR)/tb_legacy.out: $(SRCDIR)/modules/max.cpp.o $(SRCDIR)/testbenches/max_tb.cpp.o
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+
+%.cpp.o : %.cpp
+	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 .PHONY: %.compdb_entry
 %.compdb_entry: %.cpp

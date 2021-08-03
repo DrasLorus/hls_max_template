@@ -22,15 +22,16 @@
 ############################################################
 
 open_project -reset max_template
-set_top do_max_64
+set_top do_max_redx_64
 add_files ../sources/modules/max.hpp
-add_files ../sources/modules/max.cpp  -cflags "--std=c++14 -Wno-unknown-pragmas -D_MAX_IS_TOP_" 
-add_files -tb ../sources/testbenches/max_tb.cpp -cflags "--std=c++14 -Wno-unknown-pragmas -D_MAX_IS_TOP_"
+add_files ../sources/modules/max.cpp  -cflags "--std=c++14 -Wno-unknown-pragmas -D_MAX_IS_TOP_"
+add_files -tb ../sources/testbenches/catch.cpp -cflags "--std=c++14 -Wno-unknown-pragmas -D_MAX_IS_TOP_"
+add_files -tb ../sources/testbenches/max_catch_tb.cpp -cflags "--std=c++14 -Wno-unknown-pragmas -D_MAX_IS_TOP_"
 open_solution -reset "solution" -flow_target vivado
 set_part {xczu7ev-ffvf1517-3-e}
 create_clock -period 10 -name default
 config_export -format ip_catalog -rtl verilog
-set_directive_top -name do_max_64 "do_max_64"
+set_directive_top -name do_max_redx_64 "do_max_redx_64"
 csim_design -O
 csynth_design
 cosim_design 

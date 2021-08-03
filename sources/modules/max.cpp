@@ -24,62 +24,142 @@
 
 #ifdef _MAX_IS_TOP_
 
-#define IS_EVEN(N)      (((N >> 1) << 1) == N)
+uint16_t do_max_redx_64(const uint16_t in_array[64]) {
 
-// uint8_t do_max_63(const uint8_t in_array[63]) {
-// #pragma HLS interface ap_memory port=in_array
+    //#pragma HLS interface ap_memory port = in_array
 
-//    uint8_t load_array[63];
-// #pragma HLS array_partition variable=load_array complete
+    uint16_t load_array[64];
 
-//    for (uint8_t u = 0; u < 63; u++){
-// #pragma HLS unroll
-//        load_array[u] = in_array[u];
-//    }
 
-//    return max_template<63>::process(load_array);
-// }
+#pragma HLS array_partition variable = in_array complete
+#pragma HLS array_partition variable = load_array complete
 
-uint8_t do_max_64(const uint8_t in_array[64]) {
-#pragma HLS interface ap_memory port=in_array
+    for (uint16_t u = 0; u < 64; u++) {
 
-   uint8_t load_array[64];
-#pragma HLS array_partition variable=load_array complete
-
-   for (uint8_t u = 0; u < 64; u++){
 #pragma HLS unroll
-       load_array[u] = in_array[u];
-   }
+        load_array[u] = in_array[u];
+    }
 
-   return max_pow2<64>::process(load_array);
+    return max_pow2<64>::process(load_array);
 }
 
-// float do_max_63f(const float in_array[63]) {
-// #pragma HLS interface ap_memory port=in_array
+uint16_t do_max_tail_64(const uint16_t in_array[64]) {
 
-//    float load_array[63];
-// #pragma HLS array_partition variable=load_array complete
+#pragma HLS interface ap_memory port = in_array
 
-//    for (uint8_t u = 0; u < 63; u++){
-// #pragma HLS unroll
-//        load_array[u] = in_array[u];
-//    }
+    uint16_t load_array[64];
 
-//    return max_template<63>::process(load_array);
-// }
+#pragma HLS array_partition variable = load_array complete
 
-// float do_max_64f(const float in_array[64]) {
-// #pragma HLS interface ap_memory port=in_array
+    for (uint16_t u = 0; u < 64; u++) {
 
-//    float load_array[64];
-// #pragma HLS array_partition variable=load_array complete
+#pragma HLS unroll
+        load_array[u] = in_array[u];
+    }
 
-//    for (uint8_t u = 0; u < 64; u++){
-// #pragma HLS unroll
-//        load_array[u] = in_array[u];
-//    }
+    return max_template<64, TAILED>::process(load_array);
+}
 
-//    return max_pow2<64>::process(load_array);
-// }
+uint16_t do_max_head_64(const uint16_t in_array[64]) {
+
+#pragma HLS interface ap_memory port = in_array
+
+    uint16_t load_array[64];
+
+#pragma HLS array_partition variable = load_array complete
+
+    for (uint16_t u = 0; u < 64; u++) {
+
+#pragma HLS unroll
+        load_array[u] = in_array[u];
+    }
+
+    return max_template<64, HEADED>::process(load_array);
+}
+
+uint16_t do_max_loop_64(const uint16_t in_array[64]) {
+
+#pragma HLS interface ap_memory port = in_array
+
+    uint16_t load_array[64];
+
+#pragma HLS array_partition variable = load_array complete
+
+    for (uint16_t u = 0; u < 64; u++) {
+
+#pragma HLS unroll
+        load_array[u] = in_array[u];
+    }
+
+    return max_template<64, LOOPED>::process(load_array);
+}
+
+uint16_t do_max_redx_127(const uint16_t in_array[127]) {
+
+#pragma HLS interface ap_memory port = in_array
+
+    uint16_t load_array[127];
+
+#pragma HLS array_partition variable = load_array complete
+
+    for (uint16_t u = 0; u < 127; u++) {
+
+#pragma HLS unroll
+        load_array[u] = in_array[u];
+    }
+
+    return max_template<127>::process(load_array);
+}
+
+uint16_t do_max_tail_127(const uint16_t in_array[127]) {
+
+#pragma HLS interface ap_memory port = in_array
+
+    uint16_t load_array[127];
+
+#pragma HLS array_partition variable = load_array complete
+
+    for (uint16_t u = 0; u < 127; u++) {
+
+#pragma HLS unroll
+        load_array[u] = in_array[u];
+    }
+
+    return max_template<127, TAILED>::process(load_array);
+}
+
+uint16_t do_max_head_127(const uint16_t in_array[127]) {
+
+#pragma HLS interface ap_memory port = in_array
+
+    uint16_t load_array[127];
+
+#pragma HLS array_partition variable = load_array complete
+
+    for (uint16_t u = 0; u < 127; u++) {
+
+#pragma HLS unroll
+        load_array[u] = in_array[u];
+    }
+
+    return max_template<127, HEADED>::process(load_array);
+}
+
+uint16_t do_max_loop_127(const uint16_t in_array[127]) {
+
+#pragma HLS interface ap_memory port = in_array
+
+    uint16_t load_array[127];
+
+#pragma HLS array_partition variable = load_array complete
+
+    for (uint16_t u = 0; u < 127; u++) {
+
+#pragma HLS unroll
+        load_array[u] = in_array[u];
+    }
+
+    return max_template<127, LOOPED>::process(load_array);
+}
 
 #endif
