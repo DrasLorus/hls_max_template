@@ -45,7 +45,7 @@ struct max_pow2 {
     static T process(const T values[N]) {
         static_assert(N > 2, "N cannot be less than 3!");
         T half_values[N / 2];
-#pragma HLS array_partition variable = half_values complete
+#pragma HLS array_partition variable=half_values complete
         for (uint8_t i = 0; i < N / 2; i++) {
 #pragma HLS unroll
             const uint8_t j   = i << 1;
