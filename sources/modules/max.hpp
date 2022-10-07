@@ -39,20 +39,17 @@ uint16_t do_max_loop_127(const uint16_t in_array[64]);
 
 #endif
 
+template <typename T>
+constexpr T max_scalar(T a, T b) {
+    return (a < b ? b : a);
+}
+
 template <unsigned N>
 struct max_pow2 {
     template <typename T>
     static T process(const T values[N]) {
         static_assert(N > 2, "N cannot be less than 3!");
-        T half_values[N / 2];
-#pragma HLS array_partition variable=half_values complete
-        for (uint8_t i = 0; i < N / 2; i++) {
-#pragma HLS unroll
-            const uint8_t j   = i << 1;
-            const uint8_t jp1 = j + 1;
-            half_values[i]    = (values[j] < values[jp1] ? values[jp1] : values[j]);
-        }
-        return max_pow2<N / 2>::process(half_values);
+        return max_scalar(max_pow2<N / 2>::process(values), max_pow2<N / 2>::process(values + N / 2));
     }
 };
 
@@ -60,9 +57,24 @@ template <>
 struct max_pow2<2> {
     template <typename T>
     static T process(const T values[2]) {
-        return (values[0] < values[1] ? values[1] : values[0]);
+        return max_scalar(values[0], values[1]);
     }
 };
+
+
+template <unsigned N>
+struct max_naif {
+    template <typename T>
+    static T process(const T values[N]) {
+        T res = values[0];
+        for(uint8_t i = 1; i < N; i++){
+#pragma HLS pipeline
+            res = max_scalar(res, values[i]);
+        }
+        return res;
+    }
+};
+
 
 /* TRUE MAX TEMPLATE BELOW */
 
